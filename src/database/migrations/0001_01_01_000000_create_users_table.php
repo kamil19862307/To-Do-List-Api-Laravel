@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->softDeletes(); // Не удаляем пользователя, чтоб потом видеть кто делал ту или иную задачу
+
             $table->rememberToken();
             $table->timestamps();
         });
