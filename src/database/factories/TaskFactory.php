@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Http\Enums\TaskStatus;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,20 +22,22 @@ class TaskFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
-            'status' => $this->faker->randomElement(['New', 'Accepted', 'In Progress', 'Testing', 'Done'])
+            'status' => $this->faker->randomElement(TaskStatus::cases())
         ];
     }
 
     // Наполним pivot таблицу данными
     public function configure()
     {
-        $users = User::all();
-
-        $tasks = Task::all();
-
         return $this->afterCreating(function (Task $task) {
 
-            $users = User::inRandomOrder()->take(rand(1, 3))->pluck('id');
+            if ($task->status === TaskStatus::New) {
+                return;
+            }
+
+            $users = User::inRandomOrder()
+                ->take(rand(1, 3))
+                ->pluck('id');
 
             $task->users()->attach($users);
 
